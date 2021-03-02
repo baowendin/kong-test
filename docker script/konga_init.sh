@@ -1,0 +1,1 @@
+sudo docker run --rm --network=host pantsel/konga:latest -c prepare -a postgres -u postgresql://konga:konga@127.0.0.1:5432/konga
