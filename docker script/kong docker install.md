@@ -16,30 +16,31 @@ docker run --rm `
     -e "KONG_CASSANDRA_CONTACT_POINTS=kong-database" `
     kong:latest kong migrations bootstrap
 
-docker run -d --name kong `
-        --network=kong-network `
-        --restart=on-failure `
-        -e "KONG_DATABASE=postgres" `
-        -e "KONG_PG_HOST=kong-database" `
-        -e "KONG_CASSANDRA_CONTACT_POINTS=kong-database" `
-        -e "KONG_PG_PASSWORD=kong" `
-        -e "KONG_PROXY_ACCESS_LOG=/dev/stdout" `
-        -e "KONG_ADMIN_ACCESS_LOG=/dev/stdout" `
-        -e "KONG_ADMIN_ERROR_LOG=/dev/stderr" `
-        -e "KONG_ADMIN_LISTEN=0.0.0.0:8001, 0.0.0.0:8444 ssl" `
-        -e "KONG_STREAM_LISTEN=0.0.0.0:5555" `
-        -p 8000:8000 `
-        -p 8443:8443 `
-        -p 8001:8001 `
-        -p 8444:8444 `
-        -p 5555:5555 `
-        kong:latest
+    docker run -d --name kong `
+            --network=kong-network `
+            --restart=on-failure `
+            -e "KONG_DATABASE=postgres" `
+            -e "KONG_PG_HOST=kong-database" `
+            -e "KONG_CASSANDRA_CONTACT_POINTS=kong-database" `
+            -e "KONG_PG_PASSWORD=kong" `
+            -e "KONG_PROXY_ACCESS_LOG=/dev/stdout" `
+            -e "KONG_ADMIN_ACCESS_LOG=/dev/stdout" `
+            -e "KONG_ADMIN_ERROR_LOG=/dev/stderr" `
+            -e "KONG_ADMIN_LISTEN=0.0.0.0:8001, 0.0.0.0:8444 ssl" `
+            -p 8000:8000 `
+            -p 8443:8443 `
+            -p 8001:8001 `
+            -p 8444:8444 `
+            kong:latest
 
 
 konga：
 首先需要通过docker exec -it kong-database /bin/bash 进入容器
-然后通过psql -u kong 进入数据库（密码如上 是kong）
+然后通过psql -U kong 进入数据库（密码如上 是kong）
 最后创建数据库、用户、GRANT权限
+- CREATE DATABASE konga;
+- CREATE USER konga WITH PASSWORD 'konga';
+- GRANT ALL PRIVILEGES ON DATABASE konga TO konga;
 
 //这里的ip是通过docker inspect kong-database查出来的
 docker run --rm pantsel/konga:latest -c prepare -a postgres -u postgresql://konga:konga@172.18.0.1:5432/konga
